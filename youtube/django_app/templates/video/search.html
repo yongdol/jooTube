@@ -1,0 +1,47 @@
+{% load app_filters %}
+<form>
+    <label>검색어</label>
+    <input type="text" name="keyword" placeholder={{ keyword }}>
+    <button type="submit">검색</button>
+</form>
+
+
+<button><a href="{% url 'video:bookmark_list' %}">Bookmark list보기</a></button>
+
+<div>
+    <ul>
+        {% for item in response.items %}
+        <li>
+            <p>게시일 : {{ item.snippet.publishedAt|string_to_date }}</p>
+            <p>제목 : {{ item.snippet.title }}</p>
+            <p><img src="{{ item.snippet.thumbnails.default.url }}"></p>
+            <p>내용 : {{ item.snippet.description }}</p>
+        </li>
+
+
+        <form action="{% url 'video:add_bookmark' %}" method="post">{% csrf_token %}
+            <input type="hidden" name="kind" value={{ item.id.kind }}>
+            <input type="hidden" name="youtube_id" value={{ item.id.videoId }}>
+            <input type="hidden" name="title" value={{ item.snippet.title }}>
+            <input type="hidden" name="description" value={{ item.snippet.description }}>
+            <input type="hidden" name="published_date" value={{ item.snippet.publishedAt }}>
+            <input type="hidden" name="thumbnail" value={{ item.snippet.thumbnails.default.url }}>
+            <button>Bookmark</button>
+        </form>
+        {% endfor %}
+        <div>
+        {% if response.prevPageToken %}
+            <a href="{% url 'video:search' %}?keyword={{ keyword }}&page_token={{ response.prevPageToken }}">이전페이지</a>
+        {% endif %}
+
+        {% if response.prevPageToken %}
+            <a href="{% url 'video:search' %}?keyword={{ keyword }}">첫페이지</a>
+        {% endif %}
+
+        {% if response.nextPageToken %}
+            <a href="{% url 'video:search' %}?keyword={{ keyword }}&page_token={{ response.nextPageToken }}">다음페이지</a>
+        {% endif %}
+        </div>
+    </ul>
+
+</div>

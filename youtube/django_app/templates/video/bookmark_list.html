@@ -1,0 +1,12 @@
+<div>BookMark List</div>
+
+<div>
+    <ul>
+        {% for video in bookmark_lists %}
+        <div>{{ video.title }}</div>
+        <div><img src="{{ video.thumbnail }}"></div>
+        {% endfor %}
+    </ul>
+</div>
+
+<a href="{% url 'video:search' %}">검색페이지</a>
