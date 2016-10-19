@@ -1,0 +1,9 @@
+{
+	"version": 3,
+	"file": "common.compact.css",
+	"sources": [
+		"../sass/common.sass"
+	],
+	"mappings": "AAAA,AAAA,IAAI,EAAE,AAAA,IAAI,CAAC,EACT,SAAS,EAAE,IAAK,EAChB,KAAK,EAAE,IAAK,GAAG",
+	"names": []
+}

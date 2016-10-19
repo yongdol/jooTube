@@ -1,0 +1,64 @@
+{% extends 'common/base.html' %}
+{% load app_filters %}
+{% load humanize %}
+
+{% block content %}
+<h5>"{{ keyword }}"로 검색 (총 {{ response.totalResults|intcomma }} 건의 영상검색)</h5>
+<form>
+    <label>검색어</label>
+    <input type="text" name="keyword" placeholder={{ keyword }}>
+    <button type="submit">검색</button>
+</form>
+
+
+<ul>
+    {% for item in response.items %}
+    <li>
+        <p>게시일 : {{ item.snippet.publishedAt|string_to_date }}</p>
+        <p>제목 : {{ item.snippet.title }}</p>
+        <p><img src="{{ item.snippet.thumbnails.default.url }}"></p>
+        <p>내용 : {{ item.snippet.description }}</p>
+        <p>조회수 : {{ item.statistics.viewCount|intcomma }}</p>
+        <p>좋아요수 : {{ item.statistics.likeCount|intcomma }}</p>
+        <p>댓글수 : {{ item.statistics.commentCount|intcomma }}</p>
+
+        {% if item.snippet.tags %}
+        <p>태그목록 : {{ item.snippet.tags }}</p>
+        {% else %}
+        <p>태그목록 : 없음</p>
+        {% endif %}
+
+        <p>is_exist : {{ item.is_exist }}</p>
+<!--#name이 key, value가 값으로 -->
+        {% if item.is_exist %}
+        <button>Already added</button>
+        {% else %}
+        <form action="{% url 'video:bookmark_add' %}" method="post">{% csrf_token %}
+            <input type="hidden" name="kind" value="{{ item.kind }}">
+            <input type="hidden" name="youtube_id" value="{{ item.id }}">
+            <input type="hidden" name="title" value="{{ item.snippet.title }}">
+            <input type="hidden" name="description" value="{{ item.snippet.description }}">
+            <input type="hidden" name="published_date" value="{{ item.snippet.publishedAt }}">
+            <input type="hidden" name="thumbnail" value="{{ item.snippet.thumbnails.default.url }}">
+            <input type="hidden" name="path" value="{{ request.get_full_path }}">
+            <button type="submit">Add Bookmark</button>
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+
+    <div>
+        {% if response.prevPageToken %}
+        <a href="{% url 'video:search' %}?keyword={{ keyword }}&page_token={{ response.prevPageToken }}">이전페이지</a>
+        {% endif %}
+
+        {% if response.prevPageToken %}
+        <a href="{% url 'video:search' %}?keyword={{ keyword }}">첫페이지</a>
+        {% endif %}
+
+        {% if response.nextPageToken %}
+        <a href="{% url 'video:search' %}?keyword={{ keyword }}&page_token={{ response.nextPageToken }}">다음페이지</a>
+        {% endif %}
+    </div>
+</ul>
+{% endblock %}
